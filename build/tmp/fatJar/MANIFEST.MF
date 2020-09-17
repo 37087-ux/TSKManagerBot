@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: me.david.Main
+Implementation-Title: TSKManager
+Implementation-Version: 1.0.0
+
