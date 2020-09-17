@@ -1,6 +1,7 @@
 package me.david.tskmanager.eventlisteners;
 
 import me.david.tskmanager.GuildCache;
+import me.david.tskmanager.Main;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
@@ -31,7 +32,7 @@ public class EventChannelsEventListener extends ListenerAdapter {
 
 	@Override
 	public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {
-		if (trackedMessages.contains(event.getMessageId()) && event.getReactionEmote().getEmote().equals(event.getGuild().getEmoteById(emoteID))) {
+		if (trackedMessages.contains(event.getMessageId()) && event.getReactionEmote().getEmote().equals(event.getGuild().getEmoteById(emoteID)) && !Main.jda.getSelfUser().equals(event.getMember().getUser())) {
 			GuildCache cache = GuildCache.getCache(event.getGuild().getId());
 			event.getGuild().addRoleToMember(event.getMember(), cache.getAttendingEventRole()).queue();
 		}
@@ -41,7 +42,7 @@ public class EventChannelsEventListener extends ListenerAdapter {
 	public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {
 		if (trackedMessages.contains(event.getMessageId()) && event.getReactionEmote().getEmote().equals(event.getGuild().getEmoteById(emoteID))) {
 			GuildCache cache = GuildCache.getCache(event.getGuild().getId());
-			event.getGuild().removeRoleFromMember(event.getMember(), cache.getAttendingEventRole()).queue();
+			event.getGuild().removeRoleFromMember(event.getUserId(), cache.getAttendingEventRole()).queue();
 		}
 	}
 
@@ -51,8 +52,9 @@ public class EventChannelsEventListener extends ListenerAdapter {
 			GuildCache cache = GuildCache.getCache(event.getGuild().getId());
 			List<Member> members = new ArrayList<>();
 			members.addAll(event.getGuild().getMembersWithRoles(cache.getAttendingEventRole()));
-			for (Member member : members)
+			for (Member member : members) {
 				event.getGuild().removeRoleFromMember(member, cache.getAttendingEventRole()).queue();
+			}
 			trackedMessages.remove(event.getMessageId());
 		}
 	}

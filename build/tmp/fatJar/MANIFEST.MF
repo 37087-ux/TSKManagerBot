@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Main-Class: me.david.Main
+Main-Class: me.david.tskmanager.Main
 Implementation-Title: TSKManager
 Implementation-Version: 1.0.0
 

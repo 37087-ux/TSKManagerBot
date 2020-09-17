@@ -19,13 +19,13 @@ dependencies {
 
 jar {
     manifest {
-        attributes "Main-Class": "me.david.Main"
+        attributes "Main-Class": "me.david.tskmanager.Main"
     }
 }
 
 task fatJar(type: Jar) {
     manifest {
-        attributes 'Main-Class': 'me.david.Main',
+        attributes 'Main-Class': 'me.david.tskmanager.Main',
                 'Implementation-Title': 'TSKManager',
                 'Implementation-Version': '1.0.0'
     }
