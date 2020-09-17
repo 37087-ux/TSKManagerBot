@@ -16,7 +16,6 @@ public class Main {
 	public static Color defaultEmbedColor = new Color(235, 183, 52);
 
 	public static void main(String[] args) throws LoginException {
-		JDABuilder jdaBuilder = JDABuilder.createDefault("NzU1ODU1MzE0ODA0NTM5NTE0.X2JXHg.RjD6rwx4dM8B8hSEmUfbbx-219M");
 		jdaBuilder.setStatus(OnlineStatus.ONLINE);
 		jdaBuilder.setActivity(Activity.listening("to commands"));
 		addEventListeners(jdaBuilder);
