@@ -1,5 +1,6 @@
 package me.david.tskmanager;
 
+import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import org.json.simple.JSONArray;
@@ -28,7 +29,7 @@ public class GuildCache {
 	private List<Role> LRMRRoles = new ArrayList<>();
 	private List<Role> HRRoles = new ArrayList<>();
 	private List<MessageChannel> eventChannels = new ArrayList<>();
-	private Role attendingEventRole;
+	private Category eventsCategory;
 
 	public GuildCache(String guildID) {
 		this.guildID = guildID;
@@ -107,13 +108,16 @@ public class GuildCache {
 				jsonObject.put(JsonDataKeys.EVENT_CHANNELS.getKey(), jsonArray);
 			}
 
-			if (attendingEventRole != null)
-				jsonObject.put(JsonDataKeys.ATTENDING_EVENT_ROLE.getKey(), attendingEventRole.getId());
+			if (eventsCategory != null)
+				jsonObject.put(JsonDataKeys.EVENTS_CATEGORY.getKey(), eventsCategory.getId());
 
-			//write the JSONObject to a file
-			try (FileWriter fileWriter = new FileWriter(file)) {
-				fileWriter.write(jsonObject.toString());
-			}
+			if (eventsCategory != null)
+
+
+				//write the JSONObject to a file
+				try (FileWriter fileWriter = new FileWriter(file)) {
+					fileWriter.write(jsonObject.toString());
+				}
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -173,8 +177,8 @@ public class GuildCache {
 						this.eventChannels.add(Main.jda.getGuildById(guildID).getTextChannelById((String) jsonArray.get(i)));
 				}
 
-				if (isSet(jsonObject, JsonDataKeys.ATTENDING_EVENT_ROLE.getKey()))
-					this.attendingEventRole = Main.jda.getGuildById(guildID).getRoleById((String) jsonObject.get(JsonDataKeys.ATTENDING_EVENT_ROLE.getKey()));
+				if (isSet(jsonObject, JsonDataKeys.EVENTS_CATEGORY.getKey()))
+					this.eventsCategory = Main.jda.getGuildById(guildID).getCategoryById((String) jsonObject.get(JsonDataKeys.EVENTS_CATEGORY.getKey()));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -203,8 +207,8 @@ public class GuildCache {
 		RANKS_TRACK("ranks-track"),
 		LRMR_ROLES("lrmr-roles"),
 		HRROLES("hr-roles"),
-		ATTENDING_EVENT_ROLE("attending-event-role"),
-		EVENT_CHANNELS("event-channels");
+		EVENT_CHANNELS("event-channels"),
+		EVENTS_CATEGORY("events-category");
 
 		private final String key;
 
@@ -246,12 +250,12 @@ public class GuildCache {
 		return eventChannels;
 	}
 
-	public Role getAttendingEventRole() {
-		return attendingEventRole;
-	}
-
 	public Role getLrRole() {
 		return lrRole;
+	}
+
+	public Category getEventsCategory() {
+		return eventsCategory;
 	}
 
 	//setters
@@ -263,11 +267,11 @@ public class GuildCache {
 		this.hrRole = hrRole;
 	}
 
-	public void setAttendingEventRole(Role attendingEventRole) {
-		this.attendingEventRole = attendingEventRole;
-	}
-
 	public void setLrRole(Role lrRole) {
 		this.lrRole = lrRole;
+	}
+
+	public void setEventsCategory(Category eventsCategory) {
+		this.eventsCategory = eventsCategory;
 	}
 }
