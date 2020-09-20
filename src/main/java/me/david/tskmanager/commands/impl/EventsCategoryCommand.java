@@ -4,6 +4,7 @@ import me.david.tskmanager.GuildCache;
 import me.david.tskmanager.commands.SetterCommandModel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventsCategoryCommand extends SetterCommandModel {
@@ -25,8 +26,14 @@ public class EventsCategoryCommand extends SetterCommandModel {
 	@Override
 	public void setterCommand(MessageReceivedEvent event, List<String> args) {
 		GuildCache cache = GuildCache.getCache(event.getGuild().getId());
-		if (!event.getGuild().getCategoriesByName(args.get(1), true).isEmpty()) {
-			cache.setEventsCategory(event.getGuild().getCategoriesByName(args.get(1), true).get(0));
+		String categoryName = String.join(" ", new ArrayList<String>() {
+			{
+				addAll(args);
+				remove(0);
+			}
+		});
+		if (!event.getGuild().getCategoriesByName(categoryName, true).isEmpty()) {
+			cache.setEventsCategory(event.getGuild().getCategoriesByName(categoryName, true).get(0));
 			cache.serialize();
 		} else
 			event.getChannel().sendMessage("That category does not exist!").queue();
