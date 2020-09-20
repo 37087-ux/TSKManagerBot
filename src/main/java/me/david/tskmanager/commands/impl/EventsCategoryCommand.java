@@ -10,6 +10,7 @@ public class EventsCategoryCommand extends SetterCommandModel {
 
 	public EventsCategoryCommand() {
 		super("eventscategory", "Sets or gets the events category", "eventscategory (category)");
+		setHrOnly(true);
 	}
 
 	@Override
