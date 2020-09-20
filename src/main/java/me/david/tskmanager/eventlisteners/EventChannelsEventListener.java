@@ -26,14 +26,17 @@ public class EventChannelsEventListener extends ListenerAdapter {
 			GuildCache cache = GuildCache.getCache(event.getGuild().getId());
 			if (event.getMessage().getContentRaw().toLowerCase().contains("event:") && cache.getEventChannels().contains(event.getChannel())) {
 				if (cache.getEventsCategory() != null) {
-					if (emoteID.isEmpty())
-						emoteID = event.getGuild().getEmotesByName("tsk_logo", true).get(0).getId();
+					emoteID = event.getGuild().getEmotesByName("tsk_logo", true).get(0).getId();
 					event.getMessage().addReaction(event.getGuild().getEmoteById(emoteID)).queue();
 					List<Integer> takenEventNumbers = new ArrayList<>();
 					for (Map.Entry entry : events.entrySet())
 						takenEventNumbers.add(((EventData) entry.getValue()).getEventNumber());
 					Collections.sort(takenEventNumbers);
-					int eventNumber = takenEventNumbers.get(takenEventNumbers.size() - 1);
+					int eventNumber;
+					if (takenEventNumbers.size() != 0)
+						eventNumber = takenEventNumbers.get(takenEventNumbers.size() - 1);
+					else
+						eventNumber = 1;
 					Role eventRole = event.getGuild().createRole().setName("event" + eventNumber).setHoisted(false).setMentionable(false).complete();
 					TextChannel eventChannel = event.getGuild().createTextChannel("event" + eventNumber).setParent(cache.getEventsCategory()).addPermissionOverride(eventRole, EnumSet.of(Permission.VIEW_CHANNEL), null)
 							.addPermissionOverride(eventRole.getGuild().getPublicRole(), null, EnumSet.of(Permission.VIEW_CHANNEL)).complete();
