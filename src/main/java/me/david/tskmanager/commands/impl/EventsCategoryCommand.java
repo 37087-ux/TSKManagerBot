@@ -35,6 +35,7 @@ public class EventsCategoryCommand extends SetterCommandModel {
 		if (!event.getGuild().getCategoriesByName(categoryName, true).isEmpty()) {
 			cache.setEventsCategory(event.getGuild().getCategoriesByName(categoryName, true).get(0));
 			cache.serialize();
+			event.getChannel().sendMessage("Set the events category to " + cache.getEventsCategory().getName()).queue();
 		} else
 			event.getChannel().sendMessage("That category does not exist!").queue();
 	}
