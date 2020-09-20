@@ -18,9 +18,9 @@ public class Main {
 	public static Color defaultEmbedColor = new Color(235, 183, 52);
 
 	public static void main(String[] args) throws LoginException {
-		JDABuilder jdaBuilder = JDABuilder.createDefault("NzU1ODU1MzE0ODA0NTM5NTE0.X2JXHg.9KlaoJO5dZR_6iTH78-vk2GItww");
+		JDABuilder jdaBuilder = JDABuilder.createDefault("NzU1ODU1MzE0ODA0NTM5NTE0.X2JXHg.a6pKpRYtA0YKLLPm5zbt2EJs_3s");
 		jdaBuilder.setStatus(OnlineStatus.ONLINE);
-		jdaBuilder.setActivity(Activity.listening("commands"));
+		jdaBuilder.setActivity(Activity.listening("to commands"));
 		jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
 		jdaBuilder.enableIntents(GatewayIntent.GUILD_MEMBERS);
 		addEventListeners(jdaBuilder);
