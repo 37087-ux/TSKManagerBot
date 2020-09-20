@@ -24,8 +24,8 @@ public class EventChannelsEventListener extends ListenerAdapter {
 	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
 		if (event.isFromGuild()) {
 			GuildCache cache = GuildCache.getCache(event.getGuild().getId());
-			if (cache.getEventChannels() != null)
-				if (event.getMessage().getContentRaw().toLowerCase().contains("event:") && cache.getEventChannels().contains(event.getChannel())) {
+			if (event.getMessage().getContentRaw().toLowerCase().contains("event:") && cache.getEventChannels().contains(event.getChannel())) {
+				if (cache.getEventsCategory() != null) {
 					if (emoteID.isEmpty())
 						emoteID = event.getGuild().getEmotesByName("tsk_logo", true).get(0).getId();
 					event.getMessage().addReaction(event.getGuild().getEmoteById(emoteID)).queue();
@@ -40,7 +40,9 @@ public class EventChannelsEventListener extends ListenerAdapter {
 					events.put(event.getMessageId(), new EventData(eventNumber, eventRole, eventChannel));
 				} else
 					event.getChannel().sendMessage("Please set the events category first").queue();
+			}
 		}
+
 	}
 
 	@Override
