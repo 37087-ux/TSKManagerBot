@@ -18,7 +18,7 @@ public class Main {
 	public static Color defaultEmbedColor = new Color(235, 183, 52);
 
 	public static void main(String[] args) throws LoginException {
-		JDABuilder jdaBuilder = JDABuilder.createDefault("NzU1ODU1MzE0ODA0NTM5NTE0.X2JXHg.oBeVDw8vu0rBO1-yZUe2TRM6wk8");
+		JDABuilder jdaBuilder = JDABuilder.createDefault("");
 		jdaBuilder.setStatus(OnlineStatus.ONLINE);
 		jdaBuilder.setActivity(Activity.listening("commands"));
 		jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
@@ -29,6 +29,6 @@ public class Main {
 
 	private static void addEventListeners(JDABuilder jdaBuilder) {
 		jdaBuilder.addEventListeners(new HelpCommand(), new AddToFactionCommand(), new DefaultJoinRoles(), new EventChannels(), new HrRoleCommand(), new HrRolesCommand(), new LrRoleCommand(), new LrMrRolesCommand(), new PrefixCommand(),
-				new PromoteCommand(), new RanksTrackCommand(), new EventChannelsEventListener(), new PrivateMessageCommand());
+				new PromoteCommand(), new RanksTrackCommand(), new EventChannelsEventListener(), new PrivateMessageCommand(), new EventsCategoryCommand());
 	}
 }
