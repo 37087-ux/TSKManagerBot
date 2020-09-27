@@ -2,6 +2,7 @@ package me.david.tskmanager.commands.impl;
 
 import me.david.tskmanager.Main;
 import me.david.tskmanager.commands.CommandModel;
+import me.david.tskmanager.eventchannelcommands.EventCommandModel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -11,6 +12,7 @@ import java.util.List;
 public class HelpCommand extends CommandModel {
 
 	public static List<CommandModel> commands = new ArrayList<>();
+	public static List<EventCommandModel> eventCommands = new ArrayList<>();
 
 	public HelpCommand() {
 		super("help", "Shows all the commands", "help");
@@ -35,6 +37,9 @@ public class HelpCommand extends CommandModel {
 			if (command.isHrOnly())
 				embedBuilder.addField(command.getNames(), command.getDescription() + "; Usage: " + command.getUsage(), false);
 		}
+		embedBuilder.addField("Event commands", "--------------------------------------", false);
+		for (EventCommandModel eventCommandModel : eventCommands)
+			embedBuilder.addField(eventCommandModel.getNames(), eventCommandModel.getDescription() + "; Usage: " + eventCommandModel.getUsage(), false);
 
 		event.getChannel().sendMessage(embedBuilder.build()).queue();
 	}
