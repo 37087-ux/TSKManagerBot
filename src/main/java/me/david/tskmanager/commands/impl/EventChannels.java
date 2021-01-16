@@ -13,7 +13,7 @@ public class EventChannels extends SetterCommandModel {
 
 	public EventChannels() {
 		super("eventchannels", "Sets a channel as an event channel or gets event channels", "eventchannels (add|a|remove|r) (#channel)");
-		setHrOnly(true);
+		setRankUse(true, false);
 	}
 
 	@Override

@@ -14,7 +14,7 @@ public class HrRolesCommand extends SetterCommandModel {
 
 	public HrRolesCommand() {
 		super("hrroles", "Sets roles as an hr role", "hrroles (add|a|remove|r) (@role)");
-		setHrOnly(true);
+		setRankUse(false, true);
 	}
 
 	@Override

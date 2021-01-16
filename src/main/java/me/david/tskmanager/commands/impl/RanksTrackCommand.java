@@ -14,7 +14,7 @@ public class RanksTrackCommand extends SetterCommandModel {
 
 	public RanksTrackCommand() {
 		super("rankstrack", "Creates a rank track", "rankstrack (add|a|insert|i|remove|r) (@role&index) (index)");
-		setHrOnly(true);
+		setRankUse(true, false);
 	}
 
 	@Override

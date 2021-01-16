@@ -14,7 +14,7 @@ public class DefaultJoinRoles extends SetterCommandModel {
 
 	public DefaultJoinRoles() {
 		super("defaultjoinroles", "Adds or gets the default join roles", "defaultjoinroles (add|a|remove|r) (@RoleToRemove)");
-		setHrOnly(true);
+		setRankUse(true, false);
 	}
 
 	@Override

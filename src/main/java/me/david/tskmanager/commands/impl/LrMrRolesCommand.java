@@ -14,7 +14,7 @@ public class LrMrRolesCommand extends SetterCommandModel {
 
 	public LrMrRolesCommand() {
 		super("lrmrroles|lrroles", "Sets roles as a lr/mr role", "lrmrroles|lrroles (add|a|remove|r) (@role)");
-		setHrOnly(true);
+		setRankUse(true, false);
 	}
 
 	@Override

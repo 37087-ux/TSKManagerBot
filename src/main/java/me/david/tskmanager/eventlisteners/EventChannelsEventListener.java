@@ -57,8 +57,8 @@ public class EventChannelsEventListener extends ListenerAdapter {
 	public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {
 		if (event.getReactionEmote().getEmote().equals(event.getGuild().getEmoteById(emoteID)) && !Main.jda.getSelfUser().equals(event.getMember().getUser()) && events.containsKey(event.getMessageId())) {
 			event.getGuild().addRoleToMember(event.getMember(), events.get(event.getMessageId()).getEventRole()).queue();
-			String timeStamp = new SimpleDateFormat("MM.dd.HH.mm").format(new Timestamp(System.currentTimeMillis()));
-			events.get(event.getMessageId()).getLogs().append(event.getMember().getNickname() + " reacted to the event message - " + timeStamp + "\n");
+			String timeStamp = new SimpleDateFormat("MM/dd h:mm a").format(new Timestamp(System.currentTimeMillis()));
+			events.get(event.getMessageId()).getLogs().append(event.getMember().getNickname() + " reacted to the event message - " + timeStamp + " UTC\n");
 		}
 	}
 
@@ -66,8 +66,8 @@ public class EventChannelsEventListener extends ListenerAdapter {
 	public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {
 		if (event.getReactionEmote().getEmote().equals(event.getGuild().getEmoteById(emoteID)) && events.containsKey(event.getMessageId())) {
 			event.getGuild().removeRoleFromMember(event.getUserId(), events.get(event.getMessageId()).getEventRole()).queue();
-			String timeStamp = new SimpleDateFormat("MM.dd.HH.mm").format(new Timestamp(System.currentTimeMillis()));
-			events.get(event.getMessageId()).getLogs().append(event.getMember().getNickname() + " unreacted to the event message - " + timeStamp + "\n");
+			String timeStamp = new SimpleDateFormat("MM/dd h:mm a").format(new Timestamp(System.currentTimeMillis()));
+			events.get(event.getMessageId()).getLogs().append(event.getMember().getNickname() + " unreacted to the event message - " + timeStamp + " UTC\n");
 		}
 	}
 }

@@ -37,10 +37,18 @@ public class HelpCommand extends CommandModel {
 			if (command.isHrOnly())
 				embedBuilder.addField(command.getNames(), command.getDescription() + "; Usage: " + command.getUsage(), false);
 		}
-		embedBuilder.addField("Event commands", "--------------------------------------", false);
+
+		embedBuilder.addField("SHR commands", "--------------------------------------", false);
+		for (CommandModel command : commands) {
+			if (command.isShrOnly())
+				embedBuilder.addField(command.getNames(), command.getDescription() + "; Usage: " + command.getUsage(), false);
+		}
+		/*embedBuilder.addField("Event commands", "--------------------------------------", false);
 		for (EventCommandModel eventCommandModel : eventCommands)
 			embedBuilder.addField(eventCommandModel.getNames(), eventCommandModel.getDescription() + "; Usage: " + eventCommandModel.getUsage(), false);
+		 */
 
-		event.getChannel().sendMessage(embedBuilder.build()).queue();
+		event.getMember().getUser().openPrivateChannel().queue((channel) -> channel.sendMessage(embedBuilder.build()).queue());
+		event.getChannel().sendMessage("Message sent in DMs.").queue();
 	}
 }

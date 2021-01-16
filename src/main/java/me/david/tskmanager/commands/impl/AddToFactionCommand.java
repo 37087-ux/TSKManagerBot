@@ -10,8 +10,8 @@ import java.util.List;
 public class AddToFactionCommand extends CommandModel {
 
 	public AddToFactionCommand() {
-		super("addtofaction", "Gives a user the roles for them to see core faction channels", "addtofaction {@user}");
-		setHrOnly(true);
+		super("addtofaction|atf", "Gives a user the roles for them to see core faction channels", "addtofaction|atf {@user}");
+		setRankUse(true, false);
 	}
 
 	@Override

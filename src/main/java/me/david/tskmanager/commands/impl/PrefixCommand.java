@@ -11,7 +11,7 @@ public class PrefixCommand extends SetterCommandModel {
 
 	public PrefixCommand() {
 		super("prefix", "Sets or gets the prefix for the server", "prefix (prefix)");
-		setHrOnly(true);
+		setRankUse(true, false);
 	}
 
 	private final List<String> blockedPrefixes = Arrays.asList("#", "$", "@", "\\", "(", ")", "|");

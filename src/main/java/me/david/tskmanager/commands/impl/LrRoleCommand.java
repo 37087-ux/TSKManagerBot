@@ -10,7 +10,7 @@ public class LrRoleCommand extends SetterCommandModel {
 
 	public LrRoleCommand() {
 		super("lrrole", "Sets or gets the LR role", "lrrole (@role)");
-		setHrOnly(true);
+		setRankUse(true, false);
 	}
 
 	@Override

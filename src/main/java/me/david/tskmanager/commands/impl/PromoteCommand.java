@@ -12,7 +12,7 @@ public class PromoteCommand extends CommandModel {
 
 	public PromoteCommand() {
 		super("promote", "Promotes a faction member to the next rank", "promote {@user}");
-		setHrOnly(true);
+		setRankUse(false, true);
 	}
 
 	@Override
@@ -22,12 +22,27 @@ public class PromoteCommand extends CommandModel {
 
 		if (args.size() == 2 && event.getMessage().getMentionedMembers().size() == 1) {
 
+			if (event.getMessage().getMentionedMembers().get(0).equals(event.getMessage().getMember())) {
+				event.getChannel().sendMessage("You cannot promote yourself!").queue();
+				return;
+			}
+
 			Role rank = null;
+			Role selfRank = null;
 			Member member = event.getMessage().getMentionedMembers().get(0);
 
 			for (Role role : member.getRoles())
 				if (cache.getRanksTrack().getRankTrack().contains(role))
 					rank = role;
+
+			for (Role role : event.getMember().getRoles())
+				if (cache.getRanksTrack().getRankTrack().contains(role))
+					selfRank = role;
+
+			if (cache.getRanksTrack().getRankTrack().indexOf(selfRank) < cache.getRanksTrack().getRankTrack().indexOf(rank)) {
+				event.getChannel().sendMessage("You cannot promote someone higher rank than you!").queue();
+				return;
+			}
 
 			if (rank != null) {
 				Role nextRank = cache.getRanksTrack().getNextRank(rank);

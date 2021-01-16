@@ -22,6 +22,7 @@ public class GuildCache {
 
 	private String guildID;
 	private String prefix = "&";
+	private Role shrRole;
 	private Role hrRole;
 	private Role lrRole;
 	private List<Role> defaultJoinRoles = new ArrayList<>();
@@ -30,6 +31,7 @@ public class GuildCache {
 	private List<Role> HRRoles = new ArrayList<>();
 	private List<MessageChannel> eventChannels = new ArrayList<>();
 	private Category eventsCategory;
+	private List<Long> susList = new ArrayList<>();
 
 	public GuildCache(String guildID) {
 		this.guildID = guildID;
@@ -111,13 +113,21 @@ public class GuildCache {
 			if (eventsCategory != null)
 				jsonObject.put(JsonDataKeys.EVENTS_CATEGORY.getKey(), eventsCategory.getId());
 
-			if (eventsCategory != null)
+			if (shrRole != null)
+				jsonObject.put(JsonDataKeys.SHR_ROLE.getKey(), shrRole.getId());
+
+			if (!susList.isEmpty()) {
+				JSONArray jsonArray = new JSONArray();
+				for (Long id : susList)
+					jsonArray.add(id);
+				jsonObject.put(JsonDataKeys.SUS_LIST.getKey(), jsonArray);
+			}
 
 
-				//write the JSONObject to a file
-				try (FileWriter fileWriter = new FileWriter(file)) {
-					fileWriter.write(jsonObject.toString());
-				}
+			//write the JSONObject to a file
+			try (FileWriter fileWriter = new FileWriter(file)) {
+				fileWriter.write(jsonObject.toString());
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -180,6 +190,15 @@ public class GuildCache {
 				if (isSet(jsonObject, JsonDataKeys.EVENTS_CATEGORY.getKey()))
 					this.eventsCategory = Main.jda.getGuildById(guildID).getCategoryById((String) jsonObject.get(JsonDataKeys.EVENTS_CATEGORY.getKey()));
 
+				if (isSet(jsonObject, JsonDataKeys.SHR_ROLE.getKey()))
+					this.shrRole = Main.jda.getGuildById(guildID).getRoleById((String) jsonObject.get(JsonDataKeys.SHR_ROLE.getKey()));
+
+				if (isSet(jsonObject, JsonDataKeys.SUS_LIST.getKey())) {
+					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.SUS_LIST.getKey());
+					for (int i = 0; i < jsonArray.size(); i++)
+						this.susList.add((long) jsonArray.get(i));
+				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -208,7 +227,9 @@ public class GuildCache {
 		LRMR_ROLES("lrmr-roles"),
 		HRROLES("hr-roles"),
 		EVENT_CHANNELS("event-channels"),
-		EVENTS_CATEGORY("events-category");
+		EVENTS_CATEGORY("events-category"),
+		SHR_ROLE("shr-role"),
+		SUS_LIST("sus-list");
 
 		private final String key;
 
@@ -258,6 +279,14 @@ public class GuildCache {
 		return eventsCategory;
 	}
 
+	public Role getShrRole() {
+		return shrRole;
+	}
+
+	public List<Long> getSusList() {
+		return susList;
+	}
+
 	//setters
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
@@ -273,5 +302,9 @@ public class GuildCache {
 
 	public void setEventsCategory(Category eventsCategory) {
 		this.eventsCategory = eventsCategory;
+	}
+
+	public void setShrRole(Role shrRole) {
+		this.shrRole = shrRole;
 	}
 }

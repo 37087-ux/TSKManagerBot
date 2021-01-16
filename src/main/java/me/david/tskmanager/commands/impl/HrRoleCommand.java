@@ -9,7 +9,7 @@ import java.util.List;
 public class HrRoleCommand extends SetterCommandModel {
 	public HrRoleCommand() {
 		super("hrrole", "Sets the HR role", "hrrole (@role)");
-		setHrOnly(true);
+		setRankUse(false, true);
 	}
 
 	@Override
