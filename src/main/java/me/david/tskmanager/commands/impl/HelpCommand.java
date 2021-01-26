@@ -29,7 +29,7 @@ public class HelpCommand extends CommandModel {
 		embedBuilder.setColor(Main.defaultEmbedColor);
 		embedBuilder.addField("Universal commands", "--------------------------------------", false);
 		for (CommandModel command : commands) {
-			if (!command.isHrOnly())
+			if (!(command.isHrOnly() || command.isShrOnly()))
 				embedBuilder.addField(command.getNames(), command.getDescription() + "; Usage: " + command.getUsage(), false);
 		}
 		embedBuilder.addField("HR commands", "--------------------------------------", false);

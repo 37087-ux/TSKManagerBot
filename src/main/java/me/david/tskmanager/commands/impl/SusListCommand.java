@@ -5,7 +5,6 @@ import me.david.tskmanager.Main;
 import me.david.tskmanager.commands.SetterCommandModel;
 import me.david.tskmanager.commands.eventlisteners.impl.AddProfilesSusList;
 import me.david.tskmanager.commands.eventlisteners.impl.RemoveProfilesSusList;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.json.JSONObject;
 
@@ -13,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SusListCommand extends SetterCommandModel {
@@ -26,10 +26,9 @@ public class SusListCommand extends SetterCommandModel {
 	public void getterCommand(MessageReceivedEvent event, List<String> args) {
 		GuildCache cache = GuildCache.getCache(event.getGuild().getId());
 		if (!cache.getSusList().isEmpty()) {
-			EmbedBuilder embedBuilder = new EmbedBuilder();
-			embedBuilder.setTitle("Sus list");
-			embedBuilder.setColor(Main.defaultEmbedColor);
 
+			List<String> messages = new ArrayList<>();
+			StringBuilder message = new StringBuilder();
 			for (Long id : cache.getSusList()) {
 				try {
 					URL url = new URL("https://users.roblox.com/v1/users/" + id);
@@ -50,7 +49,11 @@ public class SusListCommand extends SetterCommandModel {
 					if (jsonObject.has("errors")) {
 						event.getChannel().sendMessage("Something went wrong! Please DM Burgboi.").queue();
 					} else {
-						embedBuilder.addField(jsonObject.getString("name"), "User id: " + id, true);
+						message.append("Name: " + jsonObject.getString("name") + ". User ID: " + id + "\n");
+						if (message.length() > 1900) {
+							messages.add(message.toString());
+							message.setLength(0);
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,7 +61,9 @@ public class SusListCommand extends SetterCommandModel {
 				}
 			}
 
-			event.getChannel().sendMessage(embedBuilder.build()).queue();
+			for (String string : messages) {
+				event.getChannel().sendMessage(string).queue();
+			}
 		} else
 			event.getChannel().sendMessage("You have not added any profiles to the sus list!").queue();
 	}

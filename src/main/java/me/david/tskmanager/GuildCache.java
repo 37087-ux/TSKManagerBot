@@ -1,8 +1,6 @@
 package me.david.tskmanager;
 
-import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -32,6 +30,10 @@ public class GuildCache {
 	private List<MessageChannel> eventChannels = new ArrayList<>();
 	private Category eventsCategory;
 	private List<Long> susList = new ArrayList<>();
+	private Map<String, PointLeaderboardData> pointLeaderboard = new HashMap<>();
+	private Map<String, DonationLeaderboardData> donationLeaderboard = new HashMap<>();
+	private TextChannel donationLeaderboardChannel;
+	private String donationLeaderboardMessageID;
 
 	public GuildCache(String guildID) {
 		this.guildID = guildID;
@@ -123,6 +125,34 @@ public class GuildCache {
 				jsonObject.put(JsonDataKeys.SUS_LIST.getKey(), jsonArray);
 			}
 
+			if (!pointLeaderboard.isEmpty()) {
+				JSONArray jsonArray = new JSONArray();
+				for (Map.Entry<String, PointLeaderboardData> data : pointLeaderboard.entrySet()) {
+					JSONObject jsonData = new JSONObject();
+					jsonData.put("MemberID", data.getValue().getMember().getId());
+					jsonData.put("Points", data.getValue().getPoints());
+					jsonArray.add(jsonData);
+				}
+				jsonObject.put(JsonDataKeys.POINT_LEADERBOARD.getKey(), jsonArray);
+			}
+
+			if (!donationLeaderboard.isEmpty()) {
+				JSONArray jsonArray = new JSONArray();
+				for (Map.Entry<String, DonationLeaderboardData> data : donationLeaderboard.entrySet()) {
+					JSONObject jsonData = new JSONObject();
+					jsonData.put("MemberID", data.getValue().getMember().getId());
+					jsonData.put("Credits", data.getValue().getCredits());
+					jsonArray.add(jsonData);
+				}
+				jsonObject.put(JsonDataKeys.DONATION_LEADERBOARD.getKey(), jsonArray);
+			}
+
+			if (donationLeaderboardChannel != null)
+				jsonObject.put(JsonDataKeys.DONATION_LEADERBOARD_CHANNEL.getKey(), donationLeaderboardChannel.getId());
+
+			if (donationLeaderboardMessageID != null)
+				jsonObject.put(JsonDataKeys.DONATION_LEADERBOARD_MESSAGE_ID.getKey(), donationLeaderboardMessageID);
+
 
 			//write the JSONObject to a file
 			try (FileWriter fileWriter = new FileWriter(file)) {
@@ -199,6 +229,31 @@ public class GuildCache {
 						this.susList.add((long) jsonArray.get(i));
 				}
 
+				if (isSet(jsonObject, JsonDataKeys.POINT_LEADERBOARD.getKey())) {
+					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.POINT_LEADERBOARD.getKey());
+					for (int i = 0; i < jsonArray.size(); i++) {
+						JSONObject data = (JSONObject) jsonArray.get(i);
+						Member member = Main.jda.getGuildById(guildID).getMemberById((String) data.get("MemberID"));
+						pointLeaderboard.put(member.getNickname(), new PointLeaderboardData(member, (Long) data.get("Points")));
+					}
+				}
+
+				if (isSet(jsonObject, JsonDataKeys.DONATION_LEADERBOARD.getKey())) {
+					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.DONATION_LEADERBOARD.getKey());
+					for (int i = 0; i < jsonArray.size(); i++) {
+						JSONObject data = (JSONObject) jsonArray.get(i);
+						Member member = Main.jda.getGuildById(guildID).getMemberById((String) data.get("MemberID"));
+						this.donationLeaderboard.put(member.getNickname(), new DonationLeaderboardData(member, (Long) data.get("Credits")));
+					}
+				}
+
+				if (isSet(jsonObject, JsonDataKeys.DONATION_LEADERBOARD_CHANNEL.getKey())) {
+					this.donationLeaderboardChannel = Main.jda.getGuildById(guildID).getTextChannelById((String) jsonObject.get(JsonDataKeys.DONATION_LEADERBOARD_CHANNEL.getKey()));
+				}
+
+				if (isSet(jsonObject, JsonDataKeys.DONATION_LEADERBOARD_MESSAGE_ID.getKey()))
+					this.donationLeaderboardMessageID = (String) jsonObject.get(JsonDataKeys.DONATION_LEADERBOARD_MESSAGE_ID.getKey());
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -210,9 +265,9 @@ public class GuildCache {
 
 	//check if a key in a JSONObject has a value
 	private boolean isSet(JSONObject jsonObject, String key) {
-		if (jsonObject.get(key) != null)
+		if (jsonObject.get(key) != null) {
 			return true;
-		else
+		} else
 			return false;
 	}
 
@@ -229,7 +284,11 @@ public class GuildCache {
 		EVENT_CHANNELS("event-channels"),
 		EVENTS_CATEGORY("events-category"),
 		SHR_ROLE("shr-role"),
-		SUS_LIST("sus-list");
+		SUS_LIST("sus-list"),
+		POINT_LEADERBOARD("point-leaderboard"),
+		DONATION_LEADERBOARD("donation-leaderboard"),
+		DONATION_LEADERBOARD_CHANNEL("donation-leaderboard-channel"),
+		DONATION_LEADERBOARD_MESSAGE_ID("donation-leaderboard-message-id");
 
 		private final String key;
 
@@ -287,6 +346,22 @@ public class GuildCache {
 		return susList;
 	}
 
+	public Map<String, PointLeaderboardData> getPointLeaderboard() {
+		return pointLeaderboard;
+	}
+
+	public Map<String, DonationLeaderboardData> getDonationLeaderboard() {
+		return donationLeaderboard;
+	}
+
+	public TextChannel getDonationLeaderboardChannel() {
+		return donationLeaderboardChannel;
+	}
+
+	public String getDonationLeaderboardMessageID() {
+		return donationLeaderboardMessageID;
+	}
+
 	//setters
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
@@ -306,5 +381,13 @@ public class GuildCache {
 
 	public void setShrRole(Role shrRole) {
 		this.shrRole = shrRole;
+	}
+
+	public void setDonationLeaderboardChannel(TextChannel donationLeaderboardChannel) {
+		this.donationLeaderboardChannel = donationLeaderboardChannel;
+	}
+
+	public void setDonationLeaderboardMessageID(String donationLeaderboardMessageID) {
+		this.donationLeaderboardMessageID = donationLeaderboardMessageID;
 	}
 }

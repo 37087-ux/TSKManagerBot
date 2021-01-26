@@ -51,9 +51,10 @@ public class RemoveProfilesSusList extends CommandListenerModel {
 					if (jsonObject.has("errorMessage"))
 						event.getChannel().sendMessage("That user is not on the sus list!").queue();
 					else {
-						if (cache.getSusList().contains(jsonObject.getLong("Id")))
+						if (cache.getSusList().contains(jsonObject.getLong("Id"))) {
 							cache.getSusList().remove(jsonObject.get("Id"));
-						else
+							event.getChannel().sendMessage("Removed " + jsonObject.getString("Username") + " from the sus list.").queue();
+						} else
 							event.getChannel().sendMessage("That user is not on the sus list!").queue();
 					}
 				} catch (Exception e) {
