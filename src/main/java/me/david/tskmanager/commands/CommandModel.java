@@ -1,6 +1,7 @@
 package me.david.tskmanager.commands;
 
 import me.david.tskmanager.GuildCache;
+import me.david.tskmanager.MemberBypassLevel;
 import me.david.tskmanager.commands.impl.HelpCommand;
 import me.david.tskmanager.exceptions.TwoRankUseTypeException;
 import net.dv8tion.jda.api.Permission;
@@ -49,16 +50,32 @@ public abstract class CommandModel extends ListenerAdapter {
 				onCommand(event, args);
 			else {
 
-				if (hrOnly == true) {
-					if (event.getMember().getRoles().contains(cache.getHrRole()) || event.getMember().hasPermission(Permission.MANAGE_SERVER))
-						onCommand(event, args);
-					else
-						event.getChannel().sendMessage("You must be an HR or have the permission manage server to do this!").queue();
-				} else if (shrOnly == true) {
-					if (event.getMember().getRoles().contains(cache.getShrRole()) || event.getMember().hasPermission(Permission.ADMINISTRATOR))
-						onCommand(event, args);
-					else
+				Boolean bypassType = null;
+				for (MemberBypassLevel bypassLevel : cache.getMemberBypassList()) {
+					if (bypassLevel.getMember().equals(event.getMember())) {
+						bypassType = bypassLevel.getMemberBypassType();
+					}
+				}
+
+
+				if (hrOnly) {
+					try {
+						if (event.getMember().getRoles().contains(cache.getHrRole()) || event.getMember().hasPermission(Permission.MANAGE_SERVER) || bypassType)
+							onCommand(event, args);
+						else
+							event.getChannel().sendMessage("You must be an HR or have the permission manage server to do this!").queue();
+					} catch (NullPointerException e) {
+						event.getChannel().sendMessage("You must be an HR or have the permission administrator to do this!").queue();
+					}
+				} else if (shrOnly) {
+					try {
+						if (event.getMember().getRoles().contains(cache.getShrRole()) || event.getMember().hasPermission(Permission.ADMINISTRATOR) || !bypassType)
+							onCommand(event, args);
+						else
+							event.getChannel().sendMessage("You must be an SHR or have the permission administrator to do this!").queue();
+					} catch (NullPointerException e) {
 						event.getChannel().sendMessage("You must be an SHR or have the permission administrator to do this!").queue();
+					}
 				}
 			}
 		}

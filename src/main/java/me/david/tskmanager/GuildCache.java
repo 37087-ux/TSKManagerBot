@@ -34,6 +34,7 @@ public class GuildCache {
 	private Map<String, DonationLeaderboardData> donationLeaderboard = new HashMap<>();
 	private TextChannel donationLeaderboardChannel;
 	private String donationLeaderboardMessageID;
+	private List<MemberBypassLevel> memberBypassList = new ArrayList<>();
 
 	public GuildCache(String guildID) {
 		this.guildID = guildID;
@@ -153,6 +154,17 @@ public class GuildCache {
 			if (donationLeaderboardMessageID != null)
 				jsonObject.put(JsonDataKeys.DONATION_LEADERBOARD_MESSAGE_ID.getKey(), donationLeaderboardMessageID);
 
+			if (!memberBypassList.isEmpty()) {
+				JSONArray jsonArray = new JSONArray();
+				for (MemberBypassLevel memberBypass : memberBypassList) {
+					JSONObject data = new JSONObject();
+					data.put("MemberID", memberBypass.getMember().getId());
+					data.put("BypassType", memberBypass.getMemberBypassType());
+					jsonArray.add(data);
+				}
+				jsonObject.put(JsonDataKeys.MEMBER_BYPASS_LIST.getKey(), jsonArray);
+			}
+
 
 			//write the JSONObject to a file
 			try (FileWriter fileWriter = new FileWriter(file)) {
@@ -233,7 +245,7 @@ public class GuildCache {
 					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.POINT_LEADERBOARD.getKey());
 					for (int i = 0; i < jsonArray.size(); i++) {
 						JSONObject data = (JSONObject) jsonArray.get(i);
-						Member member = Main.jda.getGuildById(guildID).getMemberById((String) data.get("MemberID"));
+						Member member = Main.jda.getGuildById(guildID).retrieveMemberById((String) data.get("MemberID")).complete();
 						pointLeaderboard.put(member.getNickname(), new PointLeaderboardData(member, (Long) data.get("Points")));
 					}
 				}
@@ -242,7 +254,7 @@ public class GuildCache {
 					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.DONATION_LEADERBOARD.getKey());
 					for (int i = 0; i < jsonArray.size(); i++) {
 						JSONObject data = (JSONObject) jsonArray.get(i);
-						Member member = Main.jda.getGuildById(guildID).getMemberById((String) data.get("MemberID"));
+						Member member = Main.jda.getGuildById(guildID).retrieveMemberById((String) data.get("MemberID")).complete();
 						this.donationLeaderboard.put(member.getNickname(), new DonationLeaderboardData(member, (Long) data.get("Credits")));
 					}
 				}
@@ -253,6 +265,15 @@ public class GuildCache {
 
 				if (isSet(jsonObject, JsonDataKeys.DONATION_LEADERBOARD_MESSAGE_ID.getKey()))
 					this.donationLeaderboardMessageID = (String) jsonObject.get(JsonDataKeys.DONATION_LEADERBOARD_MESSAGE_ID.getKey());
+
+				if (isSet(jsonObject, JsonDataKeys.MEMBER_BYPASS_LIST.getKey())) {
+					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.MEMBER_BYPASS_LIST.getKey());
+					for (int i = 0; i < jsonArray.size(); i++) {
+						JSONObject data = (JSONObject) jsonArray.get(i);
+						Member member = Main.jda.getGuildById(guildID).retrieveMemberById((String) data.get("MemberID")).complete();
+						this.memberBypassList.add(new MemberBypassLevel(member, (Boolean) data.get("BypassType")));
+					}
+				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -288,7 +309,8 @@ public class GuildCache {
 		POINT_LEADERBOARD("point-leaderboard"),
 		DONATION_LEADERBOARD("donation-leaderboard"),
 		DONATION_LEADERBOARD_CHANNEL("donation-leaderboard-channel"),
-		DONATION_LEADERBOARD_MESSAGE_ID("donation-leaderboard-message-id");
+		DONATION_LEADERBOARD_MESSAGE_ID("donation-leaderboard-message-id"),
+		MEMBER_BYPASS_LIST("member-bypass-list");
 
 		private final String key;
 
@@ -360,6 +382,10 @@ public class GuildCache {
 
 	public String getDonationLeaderboardMessageID() {
 		return donationLeaderboardMessageID;
+	}
+
+	public List<MemberBypassLevel> getMemberBypassList() {
+		return memberBypassList;
 	}
 
 	//setters
