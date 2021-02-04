@@ -1,6 +1,7 @@
 package me.david.tskmanager.commands.impl;
 
 import me.david.tskmanager.GuildCache;
+import me.david.tskmanager.PointLeaderboardData;
 import me.david.tskmanager.commands.CommandModel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -21,6 +22,11 @@ public class PromoteCommand extends CommandModel {
 		GuildCache cache = GuildCache.getCache(event.getGuild().getId());
 
 		if (args.size() == 2 && event.getMessage().getMentionedMembers().size() == 1) {
+
+			if (cache.getLrRole() == null || cache.getMrRole() == null || cache.getHrRole() == null || cache.getLRRoles().isEmpty() || cache.getMrRoles().isEmpty() || cache.getHRRoles().isEmpty()) {
+				event.getChannel().sendMessage("You have not set the LR|MR|HR role yet or have not set any roles as either LR|MR|HR!").queue();
+				return;
+			}
 
 			if (event.getMessage().getMentionedMembers().get(0).equals(event.getMessage().getMember())) {
 				event.getChannel().sendMessage("You cannot promote yourself!").queue();
@@ -46,10 +52,22 @@ public class PromoteCommand extends CommandModel {
 
 			if (rank != null) {
 				Role nextRank = cache.getRanksTrack().getNextRank(rank);
-				if (member.getRoles().contains(cache.getLrRole()) && cache.getHRRoles().contains(nextRank)) {
+				if (nextRank == null) {
+					event.getChannel().sendMessage(event.getMessage().getMentionedMembers().get(0).getEffectiveName() + " is the highest rank possible!").queue();
+					return;
+				}
+				if (member.getRoles().contains(cache.getLrRole()) && cache.getMrRoles().contains(nextRank)) {
 					event.getGuild().removeRoleFromMember(member, cache.getLrRole()).queue();
+					event.getGuild().addRoleToMember(member, cache.getMrRole()).queue();
+					if (cache.getLrPointLeaderboard().containsKey(member.getEffectiveName())) {
+						long points = cache.getLrPointLeaderboard().get(member.getEffectiveName()).getPoints();
+						cache.getLrPointLeaderboard().remove(member.getEffectiveName());
+						cache.getMrHrPointLeaderboard().put(member.getEffectiveName(), new PointLeaderboardData(member, points));
+					}
+				} else if (member.getRoles().contains(cache.getMrRole()) && cache.getHRRoles().contains(nextRank)) {
+					event.getGuild().removeRoleFromMember(member, cache.getMrRole()).queue();
 					event.getGuild().addRoleToMember(member, cache.getHrRole()).queue();
-				} else if (!member.getRoles().contains(cache.getLrRole()) && !member.getRoles().contains(cache.getHrRole()) && cache.getLRMRRoles().contains(nextRank))
+				} else if (!member.getRoles().contains(cache.getLrRole()) && !member.getRoles().contains(cache.getHrRole()) && cache.getLRRoles().contains(nextRank))
 					event.getGuild().addRoleToMember(member, cache.getLrRole()).queue();
 
 				event.getGuild().addRoleToMember(member, nextRank).queue();

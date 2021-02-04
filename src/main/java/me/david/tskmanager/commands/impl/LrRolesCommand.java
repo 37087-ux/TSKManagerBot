@@ -10,9 +10,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
-public class LrMrRolesCommand extends SetterCommandModel {
+public class LrRolesCommand extends SetterCommandModel {
 
-	public LrMrRolesCommand() {
+	public LrRolesCommand() {
 		super("lrmrroles|lrroles", "Sets roles as a lr/mr role", "lrmrroles|lrroles (add|a|remove|r) (@role)");
 		setRankUse(true, false);
 	}
@@ -20,15 +20,15 @@ public class LrMrRolesCommand extends SetterCommandModel {
 	@Override
 	public void getterCommand(MessageReceivedEvent event, List<String> args) {
 		GuildCache cache = GuildCache.getCache(event.getGuild().getId());
-		if (!cache.getLRMRRoles().isEmpty()) {
+		if (!cache.getLRRoles().isEmpty()) {
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 			embedBuilder.setTitle("LR Roles");
 			embedBuilder.setColor(Main.defaultEmbedColor);
-			for (Role role : cache.getLRMRRoles())
+			for (Role role : cache.getLRRoles())
 				embedBuilder.addField(role.getName(), "", true);
 			event.getChannel().sendMessage(embedBuilder.build()).queue();
 		} else
-			event.getChannel().sendMessage("You have not set any ranks as a lr/mr role yet!").queue();
+			event.getChannel().sendMessage("You have not set any ranks as a lr role yet!").queue();
 	}
 
 	@Override
@@ -36,12 +36,12 @@ public class LrMrRolesCommand extends SetterCommandModel {
 		GuildCache cache = GuildCache.getCache(event.getGuild().getId());
 		if (args.get(1).startsWith("a")) {
 
-			event.getChannel().sendMessage("Ping roles to set as a lr/mr role. Type finish to finish").queue();
+			event.getChannel().sendMessage("Ping roles to set as a lr role. Type finish to finish").queue();
 			Main.jda.addEventListener(new AddLrRolesEventListener(event.getMember(), event.getChannel()));
 		} else if (args.get(1).startsWith("r") && event.getMessage().getMentionedRoles().size() == 1) {
 
-			int index = cache.getLRMRRoles().indexOf(event.getMessage().getMentionedRoles().get(0));
-			cache.getLRMRRoles().remove(index);
+			int index = cache.getLRRoles().indexOf(event.getMessage().getMentionedRoles().get(0));
+			cache.getLRRoles().remove(index);
 			event.getChannel().sendMessage("Removed the role " + event.getMessage().getMentionedRoles().get(0).getName() + " from lr/mr roles").queue();
 			cache.serialize();
 		} else

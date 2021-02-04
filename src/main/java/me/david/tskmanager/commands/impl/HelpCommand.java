@@ -23,25 +23,30 @@ public class HelpCommand extends CommandModel {
 
 		//create the embed
 		EmbedBuilder embedBuilder = new EmbedBuilder();
+		EmbedBuilder embedBuilder2 = new EmbedBuilder();
+		EmbedBuilder embedBuilder3 = new EmbedBuilder();
 
-		embedBuilder.setTitle("Commands");
+		embedBuilder.setTitle("Universal Commands");
 		embedBuilder.setFooter("legend: [] is optional; {} is required");
 		embedBuilder.setColor(Main.defaultEmbedColor);
-		embedBuilder.addField("Universal commands", "--------------------------------------", false);
 		for (CommandModel command : commands) {
 			if (!(command.isHrOnly() || command.isShrOnly()))
 				embedBuilder.addField(command.getNames(), command.getDescription() + "; Usage: " + command.getUsage(), false);
 		}
-		embedBuilder.addField("HR commands", "--------------------------------------", false);
+		embedBuilder2.setTitle("HR Commands");
+		embedBuilder2.setFooter("legend: [] is optional; {} is required");
+		embedBuilder2.setColor(Main.defaultEmbedColor);
 		for (CommandModel command : commands) {
 			if (command.isHrOnly())
-				embedBuilder.addField(command.getNames(), command.getDescription() + "; Usage: " + command.getUsage(), false);
+				embedBuilder2.addField(command.getNames(), command.getDescription() + "; Usage: " + command.getUsage(), false);
 		}
 
-		embedBuilder.addField("SHR commands", "--------------------------------------", false);
+		embedBuilder3.setTitle("SHR Commands");
+		embedBuilder3.setFooter("legend: [] is optional; {} is required");
+		embedBuilder3.setColor(Main.defaultEmbedColor);
 		for (CommandModel command : commands) {
 			if (command.isShrOnly())
-				embedBuilder.addField(command.getNames(), command.getDescription() + "; Usage: " + command.getUsage(), false);
+				embedBuilder3.addField(command.getNames(), command.getDescription() + "; Usage: " + command.getUsage(), false);
 		}
 		/*embedBuilder.addField("Event commands", "--------------------------------------", false);
 		for (EventCommandModel eventCommandModel : eventCommands)
@@ -49,6 +54,8 @@ public class HelpCommand extends CommandModel {
 		 */
 
 		event.getMember().getUser().openPrivateChannel().queue((channel) -> channel.sendMessage(embedBuilder.build()).queue());
+		event.getMember().getUser().openPrivateChannel().queue((channel) -> channel.sendMessage(embedBuilder2.build()).queue());
+		event.getMember().getUser().openPrivateChannel().queue((channel) -> channel.sendMessage(embedBuilder3.build()).queue());
 		event.getChannel().sendMessage("Message sent in DMs.").queue();
 	}
 }

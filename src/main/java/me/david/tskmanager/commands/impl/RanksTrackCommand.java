@@ -13,7 +13,7 @@ import java.util.List;
 public class RanksTrackCommand extends SetterCommandModel {
 
 	public RanksTrackCommand() {
-		super("rankstrack", "Creates a rank track", "rankstrack (add|a|insert|i|remove|r) (@role&index) (index)");
+		super("rankstrack", "Creates a rank track", "rankstrack (add|a|insert|i|remove|r) (@role|index) (index)");
 		setRankUse(true, false);
 	}
 
@@ -43,11 +43,13 @@ public class RanksTrackCommand extends SetterCommandModel {
 			event.getChannel().sendMessage("Ping roles to add to the rank track. Type finish to finish").queue();
 			Main.jda.addEventListener(new AddRanksTrackEventListener(event.getMember(), event.getChannel()));
 		} else if (args.get(1).startsWith("i") && event.getMessage().getMentionedRoles().size() == 1) {
-			cache.getRanksTrack().insertRank(event.getMessage().getMentionedRoles().get(0), Integer.parseInt(args.get(3)));
+			cache.getRanksTrack().insertRank(event.getMessage().getMentionedRoles().get(0), Integer.parseInt(args.get(3)) - 1);
 			cache.serialize();
+			event.getChannel().sendMessage("Inserted the role " + event.getMessage().getMentionedRoles().get(0).getName() + " at the index " + args.get(3) + " in the ranks track.").queue();
 		} else if (args.get(1).startsWith("r")) {
-			cache.getRanksTrack().removeRank(Integer.parseInt(args.get(2)));
+			cache.getRanksTrack().removeRank(Integer.parseInt(args.get(2)) - 1);
 			cache.serialize();
+			event.getChannel().sendMessage("Removed the role " + event.getMessage().getMentionedRoles().get(0).getName() + " from the ranks track.").queue();
 		} else
 			event.getChannel().sendMessage("Usage: " + cache.getPrefix() + getUsage()).queue();
 	}

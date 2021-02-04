@@ -25,7 +25,7 @@ public class GuildCache {
 	private Role lrRole;
 	private List<Role> defaultJoinRoles = new ArrayList<>();
 	private RanksTrack ranksTrack = new RanksTrack();
-	private List<Role> LRMRRoles = new ArrayList<>();
+	private List<Role> LRRoles = new ArrayList<>();
 	private List<Role> HRRoles = new ArrayList<>();
 	private List<MessageChannel> eventChannels = new ArrayList<>();
 	private Category eventsCategory;
@@ -37,6 +37,7 @@ public class GuildCache {
 	private String donationLeaderboardMessageID;
 	private List<MemberBypassLevel> memberBypassList = new ArrayList<>();
 	private Role mrRole;
+	private List<Role> mrRoles = new ArrayList<>();
 
 	public GuildCache(String guildID) {
 		this.guildID = guildID;
@@ -75,7 +76,7 @@ public class GuildCache {
 				jsonObject.put(JsonDataKeys.PREFIX.getKey(), prefix);
 
 			if (hrRole != null)
-				jsonObject.put(JsonDataKeys.HRROLE.getKey(), hrRole.getId());
+				jsonObject.put(JsonDataKeys.HR_ROLE.getKey(), hrRole.getId());
 
 			if (lrRole != null)
 				jsonObject.put(JsonDataKeys.LR_ROLE.getKey(), lrRole.getId());
@@ -94,18 +95,18 @@ public class GuildCache {
 				jsonObject.put(JsonDataKeys.RANKS_TRACK.getKey(), jsonArray);
 			}
 
-			if (!LRMRRoles.isEmpty()) {
+			if (!LRRoles.isEmpty()) {
 				JSONArray jsonArray = new JSONArray();
-				for (Role role : LRMRRoles)
+				for (Role role : LRRoles)
 					jsonArray.add(role.getId());
-				jsonObject.put(JsonDataKeys.LRMR_ROLES.getKey(), jsonArray);
+				jsonObject.put(JsonDataKeys.LR_ROLES.getKey(), jsonArray);
 			}
 
 			if (!HRRoles.isEmpty()) {
 				JSONArray jsonArray = new JSONArray();
 				for (Role role : HRRoles)
 					jsonArray.add(role.getId());
-				jsonObject.put(JsonDataKeys.HRROLES.getKey(), jsonArray);
+				jsonObject.put(JsonDataKeys.HR_ROLES.getKey(), jsonArray);
 			}
 
 			if (!eventChannels.isEmpty()) {
@@ -181,6 +182,13 @@ public class GuildCache {
 			if (mrRole != null)
 				jsonObject.put(JsonDataKeys.MR_ROLE.getKey(), mrRole.getId());
 
+			if (!mrRoles.isEmpty()) {
+				JSONArray jsonArray = new JSONArray();
+				for (Role role : mrRoles)
+					jsonArray.add(role.getId());
+				jsonObject.put(JsonDataKeys.MR_ROLES.getKey(), jsonArray);
+			}
+
 
 			//write the JSONObject to a file
 			try (FileWriter fileWriter = new FileWriter(file)) {
@@ -209,8 +217,8 @@ public class GuildCache {
 				if (isSet(jsonObject, JsonDataKeys.PREFIX.getKey()))
 					this.prefix = (String) jsonObject.get(JsonDataKeys.PREFIX.getKey());
 
-				if (isSet(jsonObject, JsonDataKeys.HRROLE.getKey()))
-					this.hrRole = Main.jda.getGuildById(guildID).getRoleById((String) jsonObject.get(JsonDataKeys.HRROLE.getKey()));
+				if (isSet(jsonObject, JsonDataKeys.HR_ROLE.getKey()))
+					this.hrRole = Main.jda.getGuildById(guildID).getRoleById((String) jsonObject.get(JsonDataKeys.HR_ROLE.getKey()));
 
 				if (isSet(jsonObject, JsonDataKeys.LR_ROLE.getKey()))
 					this.lrRole = Main.jda.getGuildById(guildID).getRoleById((String) jsonObject.get(JsonDataKeys.LR_ROLE.getKey()));
@@ -227,14 +235,14 @@ public class GuildCache {
 						this.ranksTrack.addRank(Main.jda.getGuildById(guildID).getRoleById((String) jsonArray.get(i)));
 				}
 
-				if (isSet(jsonObject, JsonDataKeys.LRMR_ROLES.getKey())) {
-					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.LRMR_ROLES.getKey());
+				if (isSet(jsonObject, JsonDataKeys.LR_ROLES.getKey())) {
+					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.LR_ROLES.getKey());
 					for (int i = 0; i < jsonArray.size(); i++)
-						this.LRMRRoles.add(Main.jda.getGuildById(guildID).getRoleById((String) jsonArray.get(i)));
+						this.LRRoles.add(Main.jda.getGuildById(guildID).getRoleById((String) jsonArray.get(i)));
 				}
 
-				if (isSet(jsonObject, JsonDataKeys.HRROLES.getKey())) {
-					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.HRROLES.getKey());
+				if (isSet(jsonObject, JsonDataKeys.HR_ROLES.getKey())) {
+					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.HR_ROLES.getKey());
 					for (int i = 0; i < jsonArray.size(); i++)
 						this.HRRoles.add(Main.jda.getGuildById(guildID).getRoleById((String) jsonArray.get(i)));
 				}
@@ -303,6 +311,12 @@ public class GuildCache {
 				if (isSet(jsonObject, JsonDataKeys.MR_ROLE.getKey()))
 					this.mrRole = Main.jda.getGuildById(guildID).getRoleById((String) jsonObject.get(JsonDataKeys.MR_ROLE.getKey()));
 
+				if (isSet(jsonObject, JsonDataKeys.MR_ROLES.getKey())) {
+					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.MR_ROLES.getKey());
+					for (int i = 0; i < jsonArray.size(); i++)
+						this.mrRoles.add(Main.jda.getGuildById(guildID).getRoleById((String) jsonArray.get(i)));
+				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -324,12 +338,12 @@ public class GuildCache {
 	public enum JsonDataKeys {
 
 		PREFIX("prefix"),
-		HRROLE("hr-role"),
+		HR_ROLE("hr-role"),
 		LR_ROLE("lr-role"),
 		DEFAULT_JOIN_ROLES("default-join-roles"),
 		RANKS_TRACK("ranks-track"),
-		LRMR_ROLES("lrmr-roles"),
-		HRROLES("hr-roles"),
+		LR_ROLES("lr-roles"),
+		HR_ROLES("hr-roles"),
 		EVENT_CHANNELS("event-channels"),
 		EVENTS_CATEGORY("events-category"),
 		SHR_ROLE("shr-role"),
@@ -340,7 +354,8 @@ public class GuildCache {
 		DONATION_LEADERBOARD_CHANNEL("donation-leaderboard-channel"),
 		DONATION_LEADERBOARD_MESSAGE_ID("donation-leaderboard-message-id"),
 		MEMBER_BYPASS_LIST("member-bypass-list"),
-		MR_ROLE("mr-role");
+		MR_ROLE("mr-role"),
+		MR_ROLES("mr-roles");
 
 		private final String key;
 
@@ -370,8 +385,8 @@ public class GuildCache {
 		return ranksTrack;
 	}
 
-	public List<Role> getLRMRRoles() {
-		return LRMRRoles;
+	public List<Role> getLRRoles() {
+		return LRRoles;
 	}
 
 	public List<Role> getHRRoles() {
@@ -424,6 +439,10 @@ public class GuildCache {
 
 	public Role getMrRole() {
 		return mrRole;
+	}
+
+	public List<Role> getMrRoles() {
+		return mrRoles;
 	}
 
 	//setters
