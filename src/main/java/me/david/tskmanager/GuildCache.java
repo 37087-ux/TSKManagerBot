@@ -30,11 +30,13 @@ public class GuildCache {
 	private List<MessageChannel> eventChannels = new ArrayList<>();
 	private Category eventsCategory;
 	private List<Long> susList = new ArrayList<>();
-	private Map<String, PointLeaderboardData> pointLeaderboard = new HashMap<>();
+	private Map<String, PointLeaderboardData> lrPointLeaderboard = new HashMap<>();
+	private Map<String, PointLeaderboardData> mrHrPointLeaderboard = new HashMap<>();
 	private Map<String, DonationLeaderboardData> donationLeaderboard = new HashMap<>();
 	private TextChannel donationLeaderboardChannel;
 	private String donationLeaderboardMessageID;
 	private List<MemberBypassLevel> memberBypassList = new ArrayList<>();
+	private Role mrRole;
 
 	public GuildCache(String guildID) {
 		this.guildID = guildID;
@@ -126,15 +128,15 @@ public class GuildCache {
 				jsonObject.put(JsonDataKeys.SUS_LIST.getKey(), jsonArray);
 			}
 
-			if (!pointLeaderboard.isEmpty()) {
+			if (!lrPointLeaderboard.isEmpty()) {
 				JSONArray jsonArray = new JSONArray();
-				for (Map.Entry<String, PointLeaderboardData> data : pointLeaderboard.entrySet()) {
+				for (Map.Entry<String, PointLeaderboardData> data : lrPointLeaderboard.entrySet()) {
 					JSONObject jsonData = new JSONObject();
 					jsonData.put("MemberID", data.getValue().getMember().getId());
 					jsonData.put("Points", data.getValue().getPoints());
 					jsonArray.add(jsonData);
 				}
-				jsonObject.put(JsonDataKeys.POINT_LEADERBOARD.getKey(), jsonArray);
+				jsonObject.put(JsonDataKeys.LR_POINT_LEADERBOARD.getKey(), jsonArray);
 			}
 
 			if (!donationLeaderboard.isEmpty()) {
@@ -164,6 +166,20 @@ public class GuildCache {
 				}
 				jsonObject.put(JsonDataKeys.MEMBER_BYPASS_LIST.getKey(), jsonArray);
 			}
+
+			if (!mrHrPointLeaderboard.isEmpty()) {
+				JSONArray jsonArray = new JSONArray();
+				for (Map.Entry<String, PointLeaderboardData> data : mrHrPointLeaderboard.entrySet()) {
+					JSONObject jsonData = new JSONObject();
+					jsonData.put("MemberID", data.getValue().getMember().getId());
+					jsonData.put("Points", data.getValue().getPoints());
+					jsonArray.add(jsonData);
+				}
+				jsonObject.put(JsonDataKeys.MR_HR_POINT_LEADERBOARD.getKey(), jsonArray);
+			}
+
+			if (mrRole != null)
+				jsonObject.put(JsonDataKeys.MR_ROLE.getKey(), mrRole.getId());
 
 
 			//write the JSONObject to a file
@@ -241,12 +257,12 @@ public class GuildCache {
 						this.susList.add((long) jsonArray.get(i));
 				}
 
-				if (isSet(jsonObject, JsonDataKeys.POINT_LEADERBOARD.getKey())) {
-					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.POINT_LEADERBOARD.getKey());
+				if (isSet(jsonObject, JsonDataKeys.LR_POINT_LEADERBOARD.getKey())) {
+					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.LR_POINT_LEADERBOARD.getKey());
 					for (int i = 0; i < jsonArray.size(); i++) {
 						JSONObject data = (JSONObject) jsonArray.get(i);
 						Member member = Main.jda.getGuildById(guildID).retrieveMemberById((String) data.get("MemberID")).complete();
-						pointLeaderboard.put(member.getNickname(), new PointLeaderboardData(member, (Long) data.get("Points")));
+						lrPointLeaderboard.put(member.getEffectiveName(), new PointLeaderboardData(member, (Long) data.get("Points")));
 					}
 				}
 
@@ -255,7 +271,7 @@ public class GuildCache {
 					for (int i = 0; i < jsonArray.size(); i++) {
 						JSONObject data = (JSONObject) jsonArray.get(i);
 						Member member = Main.jda.getGuildById(guildID).retrieveMemberById((String) data.get("MemberID")).complete();
-						this.donationLeaderboard.put(member.getNickname(), new DonationLeaderboardData(member, (Long) data.get("Credits")));
+						this.donationLeaderboard.put(member.getEffectiveName(), new DonationLeaderboardData(member, (Long) data.get("Credits")));
 					}
 				}
 
@@ -274,6 +290,18 @@ public class GuildCache {
 						this.memberBypassList.add(new MemberBypassLevel(member, (Boolean) data.get("BypassType")));
 					}
 				}
+
+				if (isSet(jsonObject, JsonDataKeys.MR_HR_POINT_LEADERBOARD.getKey())) {
+					JSONArray jsonArray = (JSONArray) jsonObject.get(JsonDataKeys.MR_HR_POINT_LEADERBOARD.getKey());
+					for (int i = 0; i < jsonArray.size(); i++) {
+						JSONObject data = (JSONObject) jsonArray.get(i);
+						Member member = Main.jda.getGuildById(guildID).retrieveMemberById((String) data.get("MemberID")).complete();
+						this.mrHrPointLeaderboard.put(member.getEffectiveName(), new PointLeaderboardData(member, (Long) data.get("Points")));
+					}
+				}
+
+				if (isSet(jsonObject, JsonDataKeys.MR_ROLE.getKey()))
+					this.mrRole = Main.jda.getGuildById(guildID).getRoleById((String) jsonObject.get(JsonDataKeys.MR_ROLE.getKey()));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -306,11 +334,13 @@ public class GuildCache {
 		EVENTS_CATEGORY("events-category"),
 		SHR_ROLE("shr-role"),
 		SUS_LIST("sus-list"),
-		POINT_LEADERBOARD("point-leaderboard"),
+		LR_POINT_LEADERBOARD("point-leaderboard"),
+		MR_HR_POINT_LEADERBOARD("mr-hr-point-leaderboard"),
 		DONATION_LEADERBOARD("donation-leaderboard"),
 		DONATION_LEADERBOARD_CHANNEL("donation-leaderboard-channel"),
 		DONATION_LEADERBOARD_MESSAGE_ID("donation-leaderboard-message-id"),
-		MEMBER_BYPASS_LIST("member-bypass-list");
+		MEMBER_BYPASS_LIST("member-bypass-list"),
+		MR_ROLE("mr-role");
 
 		private final String key;
 
@@ -368,8 +398,8 @@ public class GuildCache {
 		return susList;
 	}
 
-	public Map<String, PointLeaderboardData> getPointLeaderboard() {
-		return pointLeaderboard;
+	public Map<String, PointLeaderboardData> getLrPointLeaderboard() {
+		return lrPointLeaderboard;
 	}
 
 	public Map<String, DonationLeaderboardData> getDonationLeaderboard() {
@@ -386,6 +416,14 @@ public class GuildCache {
 
 	public List<MemberBypassLevel> getMemberBypassList() {
 		return memberBypassList;
+	}
+
+	public Map<String, PointLeaderboardData> getMrHrPointLeaderboard() {
+		return mrHrPointLeaderboard;
+	}
+
+	public Role getMrRole() {
+		return mrRole;
 	}
 
 	//setters
@@ -415,5 +453,9 @@ public class GuildCache {
 
 	public void setDonationLeaderboardMessageID(String donationLeaderboardMessageID) {
 		this.donationLeaderboardMessageID = donationLeaderboardMessageID;
+	}
+
+	public void setMrRole(Role mrRole) {
+		this.mrRole = mrRole;
 	}
 }

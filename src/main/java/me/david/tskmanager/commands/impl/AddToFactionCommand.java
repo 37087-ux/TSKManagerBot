@@ -20,7 +20,7 @@ public class AddToFactionCommand extends CommandModel {
 			GuildCache cache = GuildCache.getCache(event.getGuild().getId());
 			for (Role role : cache.getDefaultJoinRoles())
 				event.getGuild().addRoleToMember(event.getMessage().getMentionedMembers().get(0), role).queue();
-			event.getChannel().sendMessage("Successfully updated the roles for " + event.getMessage().getMentionedMembers().get(0).getNickname()).queue();
+			event.getChannel().sendMessage("Successfully updated the roles for " + event.getMessage().getMentionedMembers().get(0).getEffectiveName()).queue();
 		}
 	}
 }

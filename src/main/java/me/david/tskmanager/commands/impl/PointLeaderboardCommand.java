@@ -12,21 +12,37 @@ import java.util.*;
 public class PointLeaderboardCommand extends CommandModel {
 
 	public PointLeaderboardCommand() {
-		super("pointleaderboard|pboard", "Prints the point leaderboard", "pointleaderbord|pboard");
+		super("pointleaderboard|pboard", "Prints the point leaderboard", "pointleaderbord|pboard {leaderboardType: hmr|lr}");
 	}
 
 	@Override
 	public void onCommand(MessageReceivedEvent event, List<String> args) {
+
 		List<Long> pointList = new ArrayList<>();
 		Map<Long, String> pointToNameMap = new HashMap<>();
 		GuildCache cache = GuildCache.getCache(event.getGuild().getId());
 
-		if (cache.getPointLeaderboard().isEmpty()) {
+		if (args.size() != 2) {
+			event.getChannel().sendMessage("Usage: " + cache.getPrefix() + getUsage()).queue();
+			return;
+		}
+
+		Map<String, PointLeaderboardData> pointLeaderboard;
+		if (args.get(1).equalsIgnoreCase("hmr"))
+			pointLeaderboard = cache.getMrHrPointLeaderboard();
+		else if (args.get(1).equalsIgnoreCase("lr"))
+			pointLeaderboard = cache.getLrPointLeaderboard();
+		else {
+			event.getChannel().sendMessage("Please provide which leaderboard you want to add points for a member to!").queue();
+			return;
+		}
+
+		if (pointLeaderboard.isEmpty()) {
 			event.getChannel().sendMessage("There is no one on the point leaderboard yet!").queue();
 			return;
 		}
 
-		for (Map.Entry<String, PointLeaderboardData> entry : cache.getPointLeaderboard().entrySet()) {
+		for (Map.Entry<String, PointLeaderboardData> entry : pointLeaderboard.entrySet()) {
 			pointList.add(entry.getValue().getPoints());
 			pointToNameMap.put(entry.getValue().getPoints(), entry.getValue().getMember().getEffectiveName());
 		}
