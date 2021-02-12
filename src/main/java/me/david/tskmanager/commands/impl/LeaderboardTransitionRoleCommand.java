@@ -10,6 +10,7 @@ public class LeaderboardTransitionRoleCommand extends SetterCommandModel {
 
 	public LeaderboardTransitionRoleCommand() {
 		super("leaderboardtransitionrole|ltr", "Sets or gets the leaderboard transition role", "leaderboardtransitionrole|ltr (@role)");
+		setRankUse(true, false);
 	}
 
 	@Override
