@@ -28,10 +28,6 @@ public class RemovePointsCommand extends CommandModel {
 					long points = Long.parseLong(args.get(2));
 
 					if (args.get(3).equalsIgnoreCase("hmr")) {
-						if (!(event.getMessage().getMentionedMembers().get(0).getRoles().contains(cache.getHrRole()) || event.getMessage().getMentionedMembers().get(0).getRoles().contains(cache.getMrRole()))) {
-							event.getChannel().sendMessage("You cannot remove points from someone that is not a MR/HR from the MR/HR point leaderboard!").queue();
-							return;
-						}
 						if (cache.getMrHrPointLeaderboard().get(event.getMessage().getMentionedMembers().get(0).getEffectiveName()) != null)
 							cache.getMrHrPointLeaderboard().get(event.getMessage().getMentionedMembers().get(0).getEffectiveName()).removePoints(points);
 						else {
@@ -39,10 +35,6 @@ public class RemovePointsCommand extends CommandModel {
 							return;
 						}
 					} else if (args.get(3).equalsIgnoreCase("lr")) {
-						if (!event.getMessage().getMentionedMembers().get(0).getRoles().contains(cache.getLrRole())) {
-							event.getChannel().sendMessage("You cannot remove points from someone that is not a LR from the LR point leaderboard!").queue();
-							return;
-						}
 						if (cache.getLrPointLeaderboard().get(event.getMessage().getMentionedMembers().get(0).getEffectiveName()) != null)
 							cache.getLrPointLeaderboard().get(event.getMessage().getMentionedMembers().get(0).getEffectiveName()).removePoints(points);
 						else {

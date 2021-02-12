@@ -59,16 +59,17 @@ public class PromoteCommand extends CommandModel {
 				if (member.getRoles().contains(cache.getLrRole()) && cache.getMrRoles().contains(nextRank)) {
 					event.getGuild().removeRoleFromMember(member, cache.getLrRole()).queue();
 					event.getGuild().addRoleToMember(member, cache.getMrRole()).queue();
-					if (cache.getLrPointLeaderboard().containsKey(member.getEffectiveName())) {
-						long points = cache.getLrPointLeaderboard().get(member.getEffectiveName()).getPoints();
-						cache.getLrPointLeaderboard().remove(member.getEffectiveName());
-						cache.getMrHrPointLeaderboard().put(member.getEffectiveName(), new PointLeaderboardData(member, points));
-					}
 				} else if (member.getRoles().contains(cache.getMrRole()) && cache.getHRRoles().contains(nextRank)) {
 					event.getGuild().removeRoleFromMember(member, cache.getMrRole()).queue();
 					event.getGuild().addRoleToMember(member, cache.getHrRole()).queue();
 				} else if (!member.getRoles().contains(cache.getLrRole()) && !member.getRoles().contains(cache.getHrRole()) && cache.getLRRoles().contains(nextRank))
 					event.getGuild().addRoleToMember(member, cache.getLrRole()).queue();
+
+				if (nextRank.equals(cache.getLeaderboardTransitionRole())) {
+					long points = cache.getLrPointLeaderboard().get(member.getEffectiveName()).getPoints();
+					cache.getLrPointLeaderboard().remove(member.getEffectiveName());
+					cache.getMrHrPointLeaderboard().put(member.getEffectiveName(), new PointLeaderboardData(member, points));
+				}
 
 				event.getGuild().addRoleToMember(member, nextRank).queue();
 				event.getGuild().removeRoleFromMember(member, rank).queue();

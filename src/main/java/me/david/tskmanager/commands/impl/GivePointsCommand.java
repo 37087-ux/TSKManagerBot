@@ -29,10 +29,6 @@ public class GivePointsCommand extends CommandModel {
 					long points = Long.parseLong(args.get(2));
 
 					if (args.get(3).equalsIgnoreCase("hmr")) {
-						if (!(event.getMessage().getMentionedMembers().get(0).getRoles().contains(cache.getHrRole()) || event.getMessage().getMentionedMembers().get(0).getRoles().contains(cache.getMrRole()))) {
-							event.getChannel().sendMessage("You cannot add someone that is not a MR/HR to the MR/HR point leaderboard!").queue();
-							return;
-						}
 						if (cache.getMrHrPointLeaderboard().get(event.getMessage().getMentionedMembers().get(0).getEffectiveName()) != null)
 							cache.getMrHrPointLeaderboard().get(event.getMessage().getMentionedMembers().get(0).getEffectiveName()).addPoints(points);
 						else {
@@ -40,10 +36,6 @@ public class GivePointsCommand extends CommandModel {
 							cache.getMrHrPointLeaderboard().put(event.getMessage().getMentionedMembers().get(0).getEffectiveName(), data);
 						}
 					} else if (args.get(3).equalsIgnoreCase("lr")) {
-						if (!event.getMessage().getMentionedMembers().get(0).getRoles().contains(cache.getLrRole())) {
-							event.getChannel().sendMessage("You cannot add someone that is not a LR to the LR point leaderboard!").queue();
-							return;
-						}
 						if (cache.getLrPointLeaderboard().get(event.getMessage().getMentionedMembers().get(0).getEffectiveName()) != null)
 							cache.getLrPointLeaderboard().get(event.getMessage().getMentionedMembers().get(0).getEffectiveName()).addPoints(points);
 						else {

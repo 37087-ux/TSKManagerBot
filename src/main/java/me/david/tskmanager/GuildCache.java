@@ -38,6 +38,7 @@ public class GuildCache {
 	private List<MemberBypassLevel> memberBypassList = new ArrayList<>();
 	private Role mrRole;
 	private List<Role> mrRoles = new ArrayList<>();
+	private Role leaderboardTransitionRole;
 
 	public GuildCache(String guildID) {
 		this.guildID = guildID;
@@ -189,6 +190,9 @@ public class GuildCache {
 				jsonObject.put(JsonDataKeys.MR_ROLES.getKey(), jsonArray);
 			}
 
+			if (leaderboardTransitionRole != null)
+				jsonObject.put(JsonDataKeys.LEADERBOARD_TRANSITION_ROLE.getKey(), leaderboardTransitionRole.getId());
+
 
 			//write the JSONObject to a file
 			try (FileWriter fileWriter = new FileWriter(file)) {
@@ -317,6 +321,9 @@ public class GuildCache {
 						this.mrRoles.add(Main.jda.getGuildById(guildID).getRoleById((String) jsonArray.get(i)));
 				}
 
+				if (isSet(jsonObject, JsonDataKeys.LEADERBOARD_TRANSITION_ROLE.getKey()))
+					this.leaderboardTransitionRole = Main.jda.getGuildById(guildID).getRoleById(JsonDataKeys.LEADERBOARD_TRANSITION_ROLE.getKey());
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -355,7 +362,8 @@ public class GuildCache {
 		DONATION_LEADERBOARD_MESSAGE_ID("donation-leaderboard-message-id"),
 		MEMBER_BYPASS_LIST("member-bypass-list"),
 		MR_ROLE("mr-role"),
-		MR_ROLES("mr-roles");
+		MR_ROLES("mr-roles"),
+		LEADERBOARD_TRANSITION_ROLE("leaderboard-transition-role");
 
 		private final String key;
 
@@ -445,6 +453,10 @@ public class GuildCache {
 		return mrRoles;
 	}
 
+	public Role getLeaderboardTransitionRole() {
+		return leaderboardTransitionRole;
+	}
+
 	//setters
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
@@ -476,5 +488,9 @@ public class GuildCache {
 
 	public void setMrRole(Role mrRole) {
 		this.mrRole = mrRole;
+	}
+
+	public void setLeaderboardTransitionRole(Role leaderboardTransitionRole) {
+		this.leaderboardTransitionRole = leaderboardTransitionRole;
 	}
 }
