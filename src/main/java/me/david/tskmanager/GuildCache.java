@@ -322,7 +322,7 @@ public class GuildCache {
 				}
 
 				if (isSet(jsonObject, JsonDataKeys.LEADERBOARD_TRANSITION_ROLE.getKey()))
-					this.leaderboardTransitionRole = Main.jda.getGuildById(guildID).getRoleById(JsonDataKeys.LEADERBOARD_TRANSITION_ROLE.getKey());
+					this.leaderboardTransitionRole = Main.jda.getGuildById(guildID).getRoleById((String) jsonObject.get(JsonDataKeys.LEADERBOARD_TRANSITION_ROLE.getKey()));
 
 			} catch (Exception e) {
 				e.printStackTrace();
