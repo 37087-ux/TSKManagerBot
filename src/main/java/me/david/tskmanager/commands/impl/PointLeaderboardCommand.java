@@ -17,9 +17,8 @@ public class PointLeaderboardCommand extends CommandModel {
 
 	@Override
 	public void onCommand(MessageReceivedEvent event, List<String> args) {
-
-		List<Long> pointList = new ArrayList<>();
-		Map<Long, String> pointToNameMap = new HashMap<>();
+		Map<String, Long> unsortedMap = new HashMap<>();
+		Map<String, Long> pointToNameMap = new LinkedHashMap<>();
 		GuildCache cache = GuildCache.getCache(event.getGuild().getId());
 
 		if (args.size() != 2) {
@@ -42,17 +41,20 @@ public class PointLeaderboardCommand extends CommandModel {
 			return;
 		}
 
-		for (Map.Entry<String, PointLeaderboardData> entry : pointLeaderboard.entrySet()) {
-			pointList.add(entry.getValue().getPoints());
-			pointToNameMap.put(entry.getValue().getPoints(), entry.getValue().getMember().getEffectiveName());
-		}
-		Collections.sort(pointList, Collections.reverseOrder());
+		for (Map.Entry<String, PointLeaderboardData> entry : pointLeaderboard.entrySet())
+			unsortedMap.put(entry.getValue().getMember().getEffectiveName(), entry.getValue().getPoints());
+
+		unsortedMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).forEachOrdered(x -> pointToNameMap.put(x.getKey(), x.getValue()));
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 		embedBuilder.setTitle("Point Leaderboard");
 		embedBuilder.setColor(Main.defaultEmbedColor);
-		for (int i = 0; i < 10 && i < pointList.size(); i++) {
-			int rankNumber = i + 1;
-			embedBuilder.addField(rankNumber + ". " + pointToNameMap.get(pointList.get(i)), "Points: " + pointList.get(i), false);
+		System.out.println(pointToNameMap);
+		int rankNumber = 1;
+		for (Map.Entry<String, Long> entry : pointToNameMap.entrySet()) {
+			embedBuilder.addField(rankNumber + ". " + entry.getKey(), "Points: " + entry.getValue(), false);
+			if (rankNumber == 10)
+				break;
+			rankNumber++;
 		}
 		event.getChannel().sendMessage(embedBuilder.build()).queue();
 	}
